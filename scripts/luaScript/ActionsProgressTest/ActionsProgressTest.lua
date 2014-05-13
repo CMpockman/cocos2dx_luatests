@@ -188,10 +188,10 @@ local function SpriteProgressBarTintAndFade()
 	array:addObject(CCTintTo:create(1, 255, 0, 0))
 	array:addObject(CCTintTo:create(1, 0, 255, 0))
 	array:addObject(CCTintTo:create(1, 0, 0, 255))
-    local tint = CCSequence:create(array)
-    local fade = CCSequence:createWithTwoActions(
-		CCFadeTo:create(1.0, 0),
-		CCFadeTo:create(1.0, 255))
+    -- local tint = CCSequence:create(array)
+    -- local fade = CCSequence:createWithTwoActions(
+		-- CCFadeTo:create(1.0, 0),
+		-- CCFadeTo:create(1.0, 255))
 
     local left = CCProgressTimer:create(CCSprite:create(s_pPathSister1))
     left:setType(kCCProgressTimerTypeBar)
@@ -202,7 +202,7 @@ local function SpriteProgressBarTintAndFade()
     left:setBarChangeRate(CCPointMake(1, 0))
     left:setPosition(CCPointMake(100, s.height / 2))
     left:runAction(CCRepeatForever:create(CCProgressTo:create(6, 100)))
-    left:runAction(CCRepeatForever:create(CCSequence:create(array)))
+    left:runAction(CCRepeatForever:create(CCSequence:create(array):copy())) -- copy() avoid crash
 	layer:addChild(left)
 
     left:addChild(CCLabelTTF:create("Tint", "Marker Felt", 20.0))

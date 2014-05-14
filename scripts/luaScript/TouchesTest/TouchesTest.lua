@@ -7,13 +7,14 @@ local kHighPlayer = 0
 local kLowPlayer = 1
 
 local kStatusBarHeight = 0.0
- 
+
 local kSpriteTag = 0
 
 local m_ball = nil
-local m_ballStartingVelocity = nil
+local m_ballStartingVelocity = ccp(20.0, -100.0);
 local m_paddles = {}
 local layer = nil
+local m_paddle = nil
 
 local function backCallback(sender)
 	local scene = CCScene:create()
@@ -23,7 +24,6 @@ end
 
 
 local function resetAndScoreBallForPlayer(player)
-    m_ballStartingVelocity = ccpMult(m_ballStartingVelocity, -1.1);
     m_ball:setVelocity( m_ballStartingVelocity );
     m_ball:setPosition( VisibleRect:center() );
 end
@@ -45,14 +45,21 @@ local function doStep(delta)
     elseif (ballPosition.y < VisibleRect:bottom().y-m_ball:radius()) then
         resetAndScoreBallForPlayer( kHighPlayer );
     end
-    m_ball:draw();
 end
 
 local function onTouch(event, x, y)
-
-    for _,paddle in ipairs(m_paddles) do
-        if paddle:containsTouchLocation(x,y) == true then
-            return paddle:onTouch(event, x, y)
+    if event == "began" then
+        for _,paddle in ipairs(m_paddles) do
+            if paddle:containsTouchLocation(x,y) == true then
+                m_paddle = paddle
+                paddle:onTouch(event, x, y)
+                return true
+            end
+        end
+    elseif m_paddle then
+        m_paddle:onTouch(event, x, y)
+        if event ~= "moved" then
+            m_paddle = nil
         end
     end
 
@@ -62,7 +69,6 @@ end
 local function CreateTouchesLayer()
     layer = CCLayer:create()
 
-    m_ballStartingVelocity = ccp(20.0, -100.0);
     local mgr = CCTextureCache:sharedTextureCache()
     local texture = mgr:addImage(s_Ball)
     m_ball = Ball.ballWithTexture(texture);
@@ -70,24 +76,23 @@ local function CreateTouchesLayer()
     m_ball:setPosition( VisibleRect:center() );
     m_ball:setVelocity( m_ballStartingVelocity );
     layer:addChild( m_ball );
-    m_ball:retain();
-    
+
     local paddleTexture = CCTextureCache:sharedTextureCache():addImage(s_Paddle);
-    
+
     local paddlesM = {}
-    
+
     local paddle = Paddle:paddleWithTexture(paddleTexture);
     paddle:setPosition( ccp(VisibleRect:center().x, VisibleRect:bottom().y + 15) );
     paddlesM[#paddlesM+1] = paddle
-    
+
     paddle = Paddle:paddleWithTexture( paddleTexture );
     paddle:setPosition( ccp(VisibleRect:center().x, VisibleRect:top().y - kStatusBarHeight - 15) );
     paddlesM[#paddlesM+1] = paddle
-    
+
     paddle = Paddle:paddleWithTexture( paddleTexture );
     paddle:setPosition( ccp(VisibleRect:center().x, VisibleRect:bottom().y + 100) );
     paddlesM[#paddlesM+1] = paddle
-    
+
     paddle = Paddle:paddleWithTexture( paddleTexture );
     paddle:setPosition( ccp(VisibleRect:center().x, VisibleRect:top().y - kStatusBarHeight - 100) );
     paddlesM[#paddlesM+1] = paddle

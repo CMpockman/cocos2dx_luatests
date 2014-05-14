@@ -7,11 +7,11 @@ Ball = class("Ball", function(texture)
     return CCSprite:createWithTexture(texture)
 end)
 
-Ball.__index = Ball
-
-Ball.m_velocity = ccp(0,0)
-
 local M_PI = 3.1415926
+
+function Ball:ctor()
+    self.m_velocity = ccp(0,0)
+end
 
 function Ball:radius()
     local  size = self:getTexture():getContentSize()
@@ -22,7 +22,7 @@ function Ball:move(delta)
     local getPosition = ccp(self:getPosition())
     local position = ccpMult(self.m_velocity, delta)
     self:setPosition( ccpAdd(getPosition, position) );
-    
+
     if (getPosition.x > VisibleRect:right().x - self:radius()) then
         self:setPosition( ccp( VisibleRect:right().x - self:radius(), getPosition.y) );
         self.m_velocity.x = self.m_velocity.x * -1;
@@ -50,7 +50,7 @@ function Ball:collideWithPaddle(paddle)
     if (selfGetPosition.x > leftX and selfGetPosition.x < rightX)  then
 
         local hit = false;
-        local angleOffset = 0.0; 
+        local angleOffset = 0.0;
 
         if (selfGetPosition.y > midY and selfGetPosition.y <= highY + self:radius()) then
             self:setPosition( ccp(selfGetPosition.x, highY + self:radius()) );
@@ -70,12 +70,12 @@ function Ball:collideWithPaddle(paddle)
 
             self.m_velocity = ccpMult(ccpForAngle(velocityAngle), scalarVelocity);
         end
-    end   
+    end
 
 end
 
 function Ball:setVelocity(velocity)
-    self.m_velocity = velocity
+    self.m_velocity = ccp(velocity.x, velocity.y)
 end
 
 function Ball:getVelocity()
@@ -83,13 +83,10 @@ function Ball:getVelocity()
 end
 
 function Ball.ballWithTexture(aTexture)
-
     if(aTexture == nil) then
         cclog("in ballWithTexture aTexture == nil")
     end
 
-    local ball = Ball.new(aTexture)
-    ball:autorelease()
-    return ball
+    return Ball.new(aTexture)
 end
 

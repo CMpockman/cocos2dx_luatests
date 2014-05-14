@@ -5,14 +5,6 @@ Paddle = class("Paddle", function(texture)
     return CCSprite:createWithTexture(texture)
 end)
 
-Paddle.__index = Paddle
-
-local kPaddleStateGrabbed = 0
-local kPaddleStateUngrabbed = 1
-
-Paddle.m_state = kPaddleStateGrabbed
-
-
 function Paddle:rect()
     local  s = self:getTexture():getContentSize()
     return CCRectMake(-s.width / 2, -s.height / 2, s.width, s.height)
@@ -27,11 +19,6 @@ function Paddle:containsTouchLocation(x,y)
 end
 
 function Paddle:ccTouchBegan(x, y)
-    if (self.m_state ~= kPaddleStateUngrabbed) then 
-        return false
-    end
-    
-    self.m_state = kPaddleStateGrabbed;
     return true;
 end
 
@@ -40,7 +27,6 @@ function Paddle:ccTouchMoved(x, y)
 end
 
 function Paddle:ccTouchEnded(x, y)
-    self.m_state = kPaddleStateUngrabbed;
 end
 
 function Paddle:onTouch(eventType, x, y)
@@ -55,7 +41,6 @@ end
 
 function Paddle:paddleWithTexture(aTexture)
     local pPaddle = Paddle.new(aTexture);
-    self.m_state = kPaddleStateUngrabbed;
     return pPaddle;
 end
 
